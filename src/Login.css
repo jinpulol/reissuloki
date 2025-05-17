@@ -1,0 +1,85 @@
+.login-container {
+  max-width: 400px;
+  margin: 48px auto;
+  background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+  border-radius: 18px;
+  box-shadow: 0 6px 32px rgba(0, 60, 120, 0.12);
+  padding: 2.5rem 2rem 2rem 2rem;
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+  border: 1.5px solid #b3c6e0;
+}
+.login-container h1 {
+  text-align: center;
+  color: #1a4d6b;
+  margin-bottom: 0.5rem;
+  letter-spacing: 1px;
+}
+.login-container h2 {
+  text-align: center;
+  color: #2d6a4f;
+  margin-bottom: 1.5rem;
+}
+.login-container p {
+  text-align: center;
+  color: #3a3a3a;
+  margin-bottom: 1.2rem;
+}
+.login-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+.login-container label {
+  color: #1a4d6b;
+  font-weight: 500;
+  margin-bottom: 0.3rem;
+}
+.login-container input[type="email"],
+.login-container input[type="password"] {
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+  color: black;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  border: 1.5px solid #b3c6e0;
+  font-size: 1rem;
+  background: #fafdff;
+  transition: border 0.2s;
+}
+.login-container input:focus {
+  border: 1.5px solid #2d6a4f;
+  outline: none;
+}
+.login-container button[type="submit"] {
+  background: linear-gradient(90deg, #43cea2 0%, #185a9d 100%);
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  padding: 0.7rem 0;
+  font-size: 1.1rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(24,90,157,0.08);
+  transition: background 0.2s, transform 0.1s;
+}
+.login-container button[type="submit"]:hover {
+  background: linear-gradient(90deg, #185a9d 0%, #43cea2 100%);
+  transform: translateY(-2px) scale(1.03);
+}
+.login-container a, .login-container a:visited {
+  color: #185a9d;
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+.login-container a:hover {
+  color: #43cea2;
+}
+.login-container .error {
+  color: #d90429;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+@media (max-width: 500px) {
+  .login-container {
+    padding: 1.2rem 0.5rem;
+  }
+}
