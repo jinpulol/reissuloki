@@ -55,7 +55,11 @@ const CountryDetail: React.FC = () => {
 
   useEffect(() => {
     if (cca3) {
-      getComments(cca3).then(setComments);
+      getComments(cca3).then(comments => {
+        // Järjestetään aikajärjestykseen (vanhimmat ensin)
+        const sorted = [...comments].sort((a, b) => a.createdAt.toMillis() - b.createdAt.toMillis());
+        setComments(sorted);
+      });
     }
   }, [cca3]);
 
