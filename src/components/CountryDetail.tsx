@@ -6,9 +6,7 @@ import { getAuth } from 'firebase/auth';
 import {
   addCountryToList,
   removeCountryFromList,
-  getUserCountryLists,
-  setCountryNote,
-  getCountryNote
+  getUserCountryLists
 } from '../services/userCountryService';
 import {
   addComment,
@@ -24,8 +22,6 @@ const CountryDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [userLists, setUserLists] = useState<{ visited: string[]; wishlist: string[] }>({ visited: [], wishlist: [] });
-  const [note, setNote] = useState('');
-  const [noteSaved, setNoteSaved] = useState(false);
   const [comments, setComments] = useState<CountryComment[]>([]);
   const [commentText, setCommentText] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -54,7 +50,6 @@ const CountryDetail: React.FC = () => {
   useEffect(() => {
     if (user && cca3) {
       getUserCountryLists(user).then(setUserLists);
-      getCountryNote(user, cca3).then(setNote);
     }
   }, [user, cca3]);
 
@@ -74,13 +69,6 @@ const CountryDetail: React.FC = () => {
     if (user && cca3) {
       await removeCountryFromList(user, list, cca3);
       getUserCountryLists(user).then(setUserLists);
-    }
-  };
-  const handleNoteSave = async () => {
-    if (user && cca3) {
-      await setCountryNote(user, cca3, note);
-      setNoteSaved(true);
-      setTimeout(() => setNoteSaved(false), 1500);
     }
   };
   const handleAddComment = async (e: React.FormEvent) => {
@@ -108,101 +96,92 @@ const CountryDetail: React.FC = () => {
   if (!country) return <p>Maatietoja ei löytynyt.</p>;
 
   return (
-    <div className="country-detail-container">
-      <Link to="/countries">← Takaisin listaan</Link>
-      <h1>{country.name.common}</h1>
-      <img src={country.flags.svg} alt={`Lippu: ${country.name.common}`} style={{ maxWidth: 200 }} />
-      {country.coatOfArms?.svg && (
-        <div>
-          <h3>Vaakuna</h3>
-          <img src={country.coatOfArms.svg} alt={`Vaakuna: ${country.name.common}`} style={{ maxWidth: 150 }} />
-        </div>
-      )}
-      <p><strong>Pääkaupunki:</strong> {country.capital?.join(', ') || 'Ei tietoa'}</p>
-      <p><strong>Väkiluku:</strong> {country.population.toLocaleString('fi-FI')}</p>
-      <p><strong>Pinta-ala:</strong> {country.area.toLocaleString('fi-FI')} km²</p>
-      <p><strong>Maanosa:</strong> {country.region} ({country.subregion})</p>
-      <p><strong>Valuutat:</strong> {country.currencies ? Object.values(country.currencies).map(c => c.name + (c.symbol ? ` (${c.symbol})` : '')).join(', ') : 'Ei tietoa'}</p>
-      <p><strong>Kielet:</strong> {country.languages ? Object.values(country.languages).join(', ') : 'Ei tietoa'}</p>
-      <p><strong>Rajanaapurit:</strong> {country.borders?.length ? country.borders.join(', ') : 'Ei'}</p>
-      <p><a href={country.maps.googleMaps} target="_blank" rel="noopener noreferrer">Avaa Google Mapsissa</a></p>
-      {user && cca3 && (
-        <div style={{ marginTop: 32 }}>
-          <h3>Omat toiminnot</h3>
-          <div style={{ display: 'flex', gap: 16 }}>
-            {userLists.visited.includes(cca3) ? (
-              <button onClick={() => handleRemoveFromList('visited')}>Poista "Käynyt täällä"</button>
-            ) : (
-              <button onClick={() => handleAddToList('visited')}>Lisää "Käynyt täällä"</button>
-            )}
-            {userLists.wishlist.includes(cca3) ? (
-              <button onClick={() => handleRemoveFromList('wishlist')}>Poista "Haluan matkustaa tänne"</button>
-            ) : (
-              <button onClick={() => handleAddToList('wishlist')}>Lisää "Haluan matkustaa tänne"</button>
-            )}
+    <div className="country-detail-layout">
+      <div className="country-detail-main">
+        <Link to="/countries">← Takaisin listaan</Link>
+        <h1>{country.name.common}</h1>
+        <img src={country.flags.svg} alt={`Lippu: ${country.name.common}`} style={{ maxWidth: 200 }} />
+        {country.coatOfArms?.svg && (
+          <div>
+            <h3>Vaakuna</h3>
+            <img src={country.coatOfArms.svg} alt={`Vaakuna: ${country.name.common}`} style={{ maxWidth: 150 }} />
           </div>
-          <div style={{ marginTop: 16 }}>
-            <label htmlFor="note">Omat muistiinpanot:</label>
-            <textarea
-              id="note"
-              value={note}
-              onChange={e => setNote(e.target.value)}
-              rows={3}
-              style={{ width: '100%', maxWidth: 400 }}
-            />
-            <button onClick={handleNoteSave} style={{ marginTop: 8 }}>Tallenna muistiinpano</button>
-            {noteSaved && <span style={{ color: 'green', marginLeft: 8 }}>Tallennettu!</span>}
-          </div>
-        </div>
-      )}
-      {/* Kommentit-osio */}
-      <div style={{ marginTop: 40 }}>
-        <h3>Kommentit</h3>
-        {user && cca3 && (
-          <form onSubmit={handleAddComment} style={{ marginBottom: 16 }}>
-            <textarea
-              value={commentText}
-              onChange={e => setCommentText(e.target.value)}
-              rows={2}
-              style={{ width: '100%', maxWidth: 400 }}
-              placeholder="Jätä julkinen kommentti..."
-            />
-            <button type="submit" style={{ marginTop: 8 }}>Lähetä</button>
-          </form>
         )}
-        {comments.length === 0 && <p>Ei kommentteja vielä.</p>}
-        <ul style={{ listStyle: 'none', padding: 0 }}>
-          {comments.map(comment => (
-            <li key={comment.id} style={{ marginBottom: 16, background: '#f3f7fa', borderRadius: 8, padding: 12 }}>
-              <div style={{ fontWeight: 500, color: '#185a9d', marginBottom: 4 }}>{comment.userEmail || 'Tuntematon käyttäjä'}</div>
-              {editingId === comment.id ? (
-                <>
-                  <textarea
-                    value={editingText}
-                    onChange={e => setEditingText(e.target.value)}
-                    rows={2}
-                    style={{ width: '100%', maxWidth: 400 }}
-                  />
-                  <div style={{ marginTop: 4 }}>
-                    <button onClick={() => handleEditComment(comment.id!)} style={{ marginRight: 8 }}>Tallenna</button>
-                    <button onClick={() => { setEditingId(null); setEditingText(''); }}>Peruuta</button>
-                  </div>
-                </>
+        <p><strong>Pääkaupunki:</strong> {country.capital?.join(', ') || 'Ei tietoa'}</p>
+        <p><strong>Väkiluku:</strong> {country.population.toLocaleString('fi-FI')}</p>
+        <p><strong>Pinta-ala:</strong> {country.area.toLocaleString('fi-FI')} km²</p>
+        <p><strong>Maanosa:</strong> {country.region} ({country.subregion})</p>
+        <p><strong>Valuutat:</strong> {country.currencies ? Object.values(country.currencies).map(c => c.name + (c.symbol ? ` (${c.symbol})` : '')).join(', ') : 'Ei tietoa'}</p>
+        <p><strong>Kielet:</strong> {country.languages ? Object.values(country.languages).join(', ') : 'Ei tietoa'}</p>
+        <p><strong>Rajanaapurit:</strong> {country.borders?.length ? country.borders.join(', ') : 'Ei'}</p>
+        <p><a href={country.maps.googleMaps} target="_blank" rel="noopener noreferrer">Avaa Google Mapsissa</a></p>
+        {user && cca3 && (
+          <div style={{ marginTop: 32 }}>
+            <div style={{ display: 'flex', gap: 16 }}>
+              {userLists.visited.includes(cca3) ? (
+                <button onClick={() => handleRemoveFromList('visited')} style={{ background: '#e74c3c', color: 'white' }}>Poista merkintä käynnistäni</button>
               ) : (
-                <>
-                  <div style={{ marginBottom: 4 }}>{comment.text}</div>
-                  {user && user.uid === comment.userId && (
-                    <div>
-                      <button onClick={() => { setEditingId(comment.id!); setEditingText(comment.text); }} style={{ marginRight: 8 }}>Muokkaa</button>
-                      <button onClick={() => handleDeleteComment(comment.id!)}>Poista</button>
-                    </div>
-                  )}
-                </>
+                <button onClick={() => handleAddToList('visited')} style={{ background: '#27ae60', color: 'white' }}>Olen käynyt täällä!</button>
               )}
-              <div style={{ fontSize: 12, color: '#888', marginTop: 4 }}>{comment.createdAt.toDate().toLocaleString('fi-FI')}</div>
-            </li>
-          ))}
-        </ul>
+              {userLists.wishlist.includes(cca3) ? (
+                <button onClick={() => handleRemoveFromList('wishlist')} style={{ background: '#e74c3c', color: 'white' }}>Poista matka toivelistaltani!</button>
+              ) : (
+                <button onClick={() => handleAddToList('wishlist')} style={{ background: '#2980ef', color: 'white' }}>Haluan matkustaa tänne!</button>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+      <div className="country-detail-side">
+        {/* Kommentit-osio */}
+        <div className="comment-section" style={{ marginTop: 40 }}>
+          <h3>Kommentit</h3>
+          {user && cca3 && (
+            <form onSubmit={handleAddComment} style={{ marginBottom: 16 }}>
+              <textarea
+                value={commentText}
+                onChange={e => setCommentText(e.target.value)}
+                rows={2}
+                style={{ width: '100%', maxWidth: 400 }}
+                placeholder="Jätä julkinen kommentti..."
+              />
+              <button type="submit" style={{ marginTop: 8 }}>Lähetä</button>
+            </form>
+          )}
+          {comments.length === 0 && <p>Ei kommentteja vielä.</p>}
+          <ul style={{ listStyle: 'none', padding: 0 }}>
+            {comments.map(comment => (
+              <li key={comment.id} style={{ marginBottom: 16, background: '#f3f7fa', borderRadius: 8, padding: 12 }}>
+                <div style={{ fontWeight: 500, color: '#185a9d', marginBottom: 4 }}>{comment.userEmail || 'Tuntematon käyttäjä'}</div>
+                {editingId === comment.id ? (
+                  <>
+                    <textarea
+                      value={editingText}
+                      onChange={e => setEditingText(e.target.value)}
+                      rows={2}
+                      style={{ width: '100%', maxWidth: 400 }}
+                    />
+                    <div style={{ marginTop: 4 }}>
+                      <button onClick={() => handleEditComment(comment.id!)} style={{ marginRight: 8 }}>Tallenna</button>
+                      <button onClick={() => { setEditingId(null); setEditingText(''); }}>Peruuta</button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div style={{ marginBottom: 4 }}>{comment.text}</div>
+                    {user && user.uid === comment.userId && (
+                      <div>
+                        <button onClick={() => { setEditingId(comment.id!); setEditingText(comment.text); }} style={{ marginRight: 8, background: '#2980ef', color: 'white' }}>Muokkaa</button>
+                        <button onClick={() => handleDeleteComment(comment.id!)} style={{ background: '#e74c3c', color: 'white' }}>Poista</button>
+                      </div>
+                    )}
+                  </>
+                )}
+                <div style={{ fontSize: 12, color: '#888', marginTop: 4 }}>{comment.createdAt.toDate().toLocaleString('fi-FI')}</div>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   );

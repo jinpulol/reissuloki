@@ -94,7 +94,7 @@ const CountryList: React.FC = () => {
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Esim. Finland tai Helsinki"
+                placeholder="Hae englannin kielisillä nimillä, esim. Finland tai London"
             />
         </div>
         <div className="form-group">

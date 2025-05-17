@@ -32,12 +32,28 @@ function App() {
     <BrowserRouter>
       {user ? (
         <>
-          <nav style={{ display: 'flex', gap: '1rem', padding: '1rem', background: '#f0f0f0' }}>
-            <Link to="/countries">Maat</Link>
-            <Link to="/visited">Käydyt maat</Link>
-            <Link to="/wishlist">Toivelista</Link>
-            <button onClick={() => getAuth().signOut()}>Kirjaudu ulos</button>
+          <nav style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            background: '#185a9d',
+            color: 'white',
+            zIndex: 1000,
+            padding: '1rem',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.07)',
+            display: 'flex',
+            gap: '1rem',
+            alignItems: 'center',
+            fontWeight: 500
+          }}>
+            <Link to="/countries" style={{ color: 'white', textDecoration: 'none', fontSize: 18 }}>Maat</Link>
+            <Link to="/visited" style={{ color: 'white', textDecoration: 'none', fontSize: 18 }}>Käydyt maat</Link>
+            <Link to="/wishlist" style={{ color: 'white', textDecoration: 'none', fontSize: 18 }}>Toivelista</Link>
+            <div className="nav-spacer" style={{ width: 32 }} />
+            <button onClick={() => getAuth().signOut()} style={{ background: '#e74c3c', color: 'white', marginRight: 20 }}>Kirjaudu ulos</button>
           </nav>
+          <div style={{ height: 68 }} />
           <Routes>
             <Route path="/countries" element={<CountryList />} />
             <Route path="/country/:cca3" element={<CountryDetail />} />

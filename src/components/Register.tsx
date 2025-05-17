@@ -24,7 +24,7 @@ const Register: React.FC = () => {
 
   return (
     <div className="register-container">
-      <p style={{ color: 'blue' }}>Testiteksti: Register-komponentti renderöityy!</p>
+      <p style={{ color: 'blue' }}>Valmistellaan rekisteröitymistä!</p>
       <h2>Luo uusi käyttäjä</h2>
       <form onSubmit={handleSubmit}>
         <div>

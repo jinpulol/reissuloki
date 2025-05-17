@@ -33,7 +33,6 @@ export const addCountryToUserList = async (
   const user = auth.currentUser;
   if (!user) {
     console.error("Käyttäjä ei ole kirjautunut sisään.");
-    // Voit heittää virheen tai palauttaa nullin ja käsitellä sen käyttöliittymässä
     throw new Error("Toiminto vaatii kirjautumisen.");
   }
   try {
@@ -45,7 +44,7 @@ export const addCountryToUserList = async (
     return docRef.id;
   } catch (error) {
     console.error("Virhe lisättäessä maata listalle: ", error);
-    throw error; // Heitä virhe eteenpäin käsiteltäväksi
+    throw error;
   }
 };
 
@@ -75,8 +74,7 @@ export const removeCountryFromUserList = async (docId: string): Promise<void> =>
   if (!user) {
     throw new Error("Toiminto vaatii kirjautumisen.");
   }
-  // Varmistus: Firestore-säännöillä tulisi myös estää luvaton poisto.
-  // Tässä voisi halutessaan ensin hakea dokumentin ja varmistaa sen omistajuuden.
+  
   const docRef = doc(db, USER_LISTS_COLLECTION, docId);
   await deleteDoc(docRef);
 };
