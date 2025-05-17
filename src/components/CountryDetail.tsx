@@ -53,14 +53,17 @@ const CountryDetail: React.FC = () => {
     }
   }, [user, cca3]);
 
-  useEffect(() => {
+  const refreshComments = async () => {
     if (cca3) {
-      getComments(cca3).then(comments => {
-        // Järjestetään aikajärjestykseen (vanhimmat ensin)
-        const sorted = [...comments].sort((a, b) => a.createdAt.toMillis() - b.createdAt.toMillis());
-        setComments(sorted);
-      });
+      const fetched = await getComments(cca3);
+      // Järjestetään aikajärjestykseen (vanhimmat ensin)
+      const sorted = [...fetched].sort((a, b) => a.createdAt.toMillis() - b.createdAt.toMillis());
+      setComments(sorted);
     }
+  };
+
+  useEffect(() => {
+    refreshComments();
   }, [cca3]);
 
   const handleAddToList = async (list: 'visited' | 'wishlist') => {
@@ -80,19 +83,19 @@ const CountryDetail: React.FC = () => {
     if (!user || !commentText.trim() || !cca3) return;
     await addComment(cca3, commentText.trim());
     setCommentText('');
-    setComments(await getComments(cca3));
+    await refreshComments();
   };
   const handleEditComment = async (commentId: string) => {
     if (!user || !editingText.trim()) return;
     await updateComment(commentId, editingText.trim());
     setEditingId(null);
     setEditingText('');
-    setComments(await getComments(cca3!));
+    await refreshComments();
   };
   const handleDeleteComment = async (commentId: string) => {
     if (!user) return;
     await deleteComment(commentId);
-    setComments(await getComments(cca3!));
+    await refreshComments();
   };
 
   if (loading) return <p>Ladataan tietoja...</p>;
