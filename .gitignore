@@ -36,3 +36,4 @@ firebase.json
 
 .vscode/
 .idea/dist/
+dist/
