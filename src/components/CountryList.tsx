@@ -21,8 +21,10 @@ const CountryList: React.FC = () => {
       try {
         setLoading(true);
         const data = await getAllCountriesSummary();
-        setAllCountries(data);
-        setFilteredCountries(data); // Aluksi näytetään kaikki
+        // Järjestetään maat aakkosjärjestykseen nimen mukaan
+        const sorted = [...data].sort((a, b) => a.name.common.localeCompare(b.name.common));
+        setAllCountries(sorted);
+        setFilteredCountries(sorted); // Aluksi näytetään kaikki aakkosjärjestyksessä
         setError(null);
       } catch (err) {
         setError("Maiden tietoja ei voitu ladata. Yritä myöhemmin uudelleen.");
@@ -50,21 +52,18 @@ const CountryList: React.FC = () => {
     try {
         let results: SummaryCountry[] = [];
         if (searchTerm) {
-            // API:n hakutoiminto on suppeampi, joten haetaan kaikki ja suodatetaan asiakaspuolella tarkemmin,
-            // tai käytetään API:n hakua ja yhdistetään tulokset.
-            // Yksinkertaisuuden vuoksi suodatetaan jo ladatuista.
             results = allCountries.filter(country =>
                 country.name.common.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 (country.capital && country.capital.join(', ').toLowerCase().includes(searchTerm.toLowerCase()))
             );
         } else {
-            results = [...allCountries]; // Käytä kaikkia maita, jos hakusana on tyhjä
+            results = [...allCountries];
         }
-
-
         if (selectedRegion) {
             results = results.filter(country => country.region === selectedRegion);
         }
+        // Järjestetään hakutulokset aakkosjärjestykseen
+        results = results.sort((a, b) => a.name.common.localeCompare(b.name.common));
         setFilteredCountries(results);
     } catch (err) {
         setError("Haussa tapahtui virhe.");

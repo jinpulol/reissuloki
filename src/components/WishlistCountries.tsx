@@ -21,7 +21,9 @@ const WishlistCountries: React.FC = () => {
         if (user) {
           const lists = await getUserCountryLists(user);
           const all = await getAllCountriesSummary();
-          setCountries(all.filter(c => lists.wishlist.includes(c.cca3)));
+          const filtered = all.filter(c => lists.wishlist.includes(c.cca3));
+          // Järjestetään aakkosjärjestykseen nimen mukaan
+          setCountries(filtered.sort((a, b) => a.name.common.localeCompare(b.name.common)));
         }
       } catch (err) {
         setError('Toivelistan hakeminen epäonnistui.');

@@ -10,6 +10,13 @@ import {
   setCountryNote,
   getCountryNote
 } from '../services/userCountryService';
+import {
+  addComment,
+  getComments,
+  updateComment,
+  deleteComment,
+  type CountryComment
+} from '../services/commentService';
 
 const CountryDetail: React.FC = () => {
   const { cca3 } = useParams<{ cca3: string }>();
@@ -19,6 +26,10 @@ const CountryDetail: React.FC = () => {
   const [userLists, setUserLists] = useState<{ visited: string[]; wishlist: string[] }>({ visited: [], wishlist: [] });
   const [note, setNote] = useState('');
   const [noteSaved, setNoteSaved] = useState(false);
+  const [comments, setComments] = useState<CountryComment[]>([]);
+  const [commentText, setCommentText] = useState('');
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingText, setEditingText] = useState('');
   const auth = getAuth();
   const user = auth.currentUser;
 
@@ -47,6 +58,12 @@ const CountryDetail: React.FC = () => {
     }
   }, [user, cca3]);
 
+  useEffect(() => {
+    if (cca3) {
+      getComments(cca3).then(setComments);
+    }
+  }, [cca3]);
+
   const handleAddToList = async (list: 'visited' | 'wishlist') => {
     if (user && cca3) {
       await addCountryToList(user, list, cca3);
@@ -65,6 +82,25 @@ const CountryDetail: React.FC = () => {
       setNoteSaved(true);
       setTimeout(() => setNoteSaved(false), 1500);
     }
+  };
+  const handleAddComment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user || !commentText.trim() || !cca3) return;
+    await addComment(cca3, commentText.trim());
+    setCommentText('');
+    setComments(await getComments(cca3));
+  };
+  const handleEditComment = async (commentId: string) => {
+    if (!user || !editingText.trim()) return;
+    await updateComment(commentId, editingText.trim());
+    setEditingId(null);
+    setEditingText('');
+    setComments(await getComments(cca3!));
+  };
+  const handleDeleteComment = async (commentId: string) => {
+    if (!user) return;
+    await deleteComment(commentId);
+    setComments(await getComments(cca3!));
   };
 
   if (loading) return <p>Ladataan tietoja...</p>;
@@ -119,6 +155,55 @@ const CountryDetail: React.FC = () => {
           </div>
         </div>
       )}
+      {/* Kommentit-osio */}
+      <div style={{ marginTop: 40 }}>
+        <h3>Kommentit</h3>
+        {user && cca3 && (
+          <form onSubmit={handleAddComment} style={{ marginBottom: 16 }}>
+            <textarea
+              value={commentText}
+              onChange={e => setCommentText(e.target.value)}
+              rows={2}
+              style={{ width: '100%', maxWidth: 400 }}
+              placeholder="Jätä julkinen kommentti..."
+            />
+            <button type="submit" style={{ marginTop: 8 }}>Lähetä</button>
+          </form>
+        )}
+        {comments.length === 0 && <p>Ei kommentteja vielä.</p>}
+        <ul style={{ listStyle: 'none', padding: 0 }}>
+          {comments.map(comment => (
+            <li key={comment.id} style={{ marginBottom: 16, background: '#f3f7fa', borderRadius: 8, padding: 12 }}>
+              <div style={{ fontWeight: 500, color: '#185a9d', marginBottom: 4 }}>{comment.userEmail || 'Tuntematon käyttäjä'}</div>
+              {editingId === comment.id ? (
+                <>
+                  <textarea
+                    value={editingText}
+                    onChange={e => setEditingText(e.target.value)}
+                    rows={2}
+                    style={{ width: '100%', maxWidth: 400 }}
+                  />
+                  <div style={{ marginTop: 4 }}>
+                    <button onClick={() => handleEditComment(comment.id!)} style={{ marginRight: 8 }}>Tallenna</button>
+                    <button onClick={() => { setEditingId(null); setEditingText(''); }}>Peruuta</button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div style={{ marginBottom: 4 }}>{comment.text}</div>
+                  {user && user.uid === comment.userId && (
+                    <div>
+                      <button onClick={() => { setEditingId(comment.id!); setEditingText(comment.text); }} style={{ marginRight: 8 }}>Muokkaa</button>
+                      <button onClick={() => handleDeleteComment(comment.id!)}>Poista</button>
+                    </div>
+                  )}
+                </>
+              )}
+              <div style={{ fontSize: 12, color: '#888', marginTop: 4 }}>{comment.createdAt.toDate().toLocaleString('fi-FI')}</div>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };
