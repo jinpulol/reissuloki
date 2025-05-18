@@ -1,1 +1,0 @@
-import{j as s}from"./react-BWFZKfll.js";const a=({id:t,label:o,type:n="text",value:r,onChange:x,required:e,minLength:j})=>s.jsxs("div",{children:[s.jsx("label",{htmlFor:t,children:o}),s.jsx("input",{id:t,type:n,value:r,onChange:x,required:e,minLength:j})]}),i=t=>s.jsx("button",{...t});export{a as F,i as a};
