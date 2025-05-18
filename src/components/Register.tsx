@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebaseConfig';
+import FormInput from './FormInput';
+import FormButton from './FormButton';
 
 const Register: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -26,28 +28,24 @@ const Register: React.FC = () => {
     <div className="register-container">
       <h2>Luo uusi käyttäjä</h2>
       <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="email">Sähköposti:</label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="password">Salasana:</label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            required
-            minLength={6}
-          />
-        </div>
-        <button type="submit" style={{ width: '100%', marginBottom: 10 }}>Rekisteröidy</button>
+        <FormInput
+          id="email"
+          label="Sähköposti:"
+          type="email"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          required
+        />
+        <FormInput
+          id="password"
+          label="Salasana:"
+          type="password"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+          required
+          minLength={6}
+        />
+        <FormButton type="submit" style={{ width: '100%', marginBottom: 10 }}>Rekisteröidy</FormButton>
         <a
           href="/"
           style={{

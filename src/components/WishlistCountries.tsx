@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { getAuth } from 'firebase/auth';
+import { auth } from '../firebaseConfig';
 import { getUserCountryLists } from '../services/userCountryService';
 import { getAllCountriesSummary } from '../services/countryService';
 import type { Country } from '../services/countryService';
-import { Link } from 'react-router-dom';
+import CountryCard from './CountryCard';
 
 const WishlistCountries: React.FC = () => {
 
   const [countries, setCountries] = useState<Pick<Country, 'name' | 'cca3' | 'flags' | 'population' | 'region' | 'capital'>[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const auth = getAuth();
   const user = auth.currentUser;
 
   useEffect(() => {
@@ -46,15 +45,7 @@ const WishlistCountries: React.FC = () => {
       ) : (
         <div className="country-grid">
           {countries.map(country => (
-            <Link to={`/country/${country.cca3}`} key={country.cca3} className="country-card">
-              <img src={country.flags.svg} alt={`Lippu: ${country.name.common}`} loading="lazy" />
-              <div className="card-content">
-                <h2>{country.name.common}</h2>
-                <p>Pääkaupunki: {country.capital?.[0] || 'Ei tietoa'}</p>
-                <p>Väkiluku: {country.population.toLocaleString('fi-FI')}</p>
-                <p>Maanosa: {country.region}</p>
-              </div>
-            </Link>
+            <CountryCard key={country.cca3} country={country} />
           ))}
         </div>
       )}

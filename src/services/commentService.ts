@@ -11,7 +11,7 @@ import {
   orderBy,
   Timestamp
 } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
+import { auth } from '../firebaseConfig';
 
 export interface CountryComment {
   id?: string;
@@ -25,7 +25,6 @@ export interface CountryComment {
 const COMMENTS_COLLECTION = 'countryComments';
 
 export const addComment = async (countryCca3: string, text: string) => {
-  const auth = getAuth();
   const user = auth.currentUser;
   if (!user) throw new Error('Kirjautuminen vaaditaan');
   await addDoc(collection(db, COMMENTS_COLLECTION), {
@@ -48,7 +47,6 @@ export const getComments = async (countryCca3: string): Promise<CountryComment[]
 };
 
 export const updateComment = async (commentId: string, newText: string) => {
-  const auth = getAuth();
   const user = auth.currentUser;
   if (!user) throw new Error('Kirjautuminen vaaditaan');
   const commentRef = doc(db, COMMENTS_COLLECTION, commentId);
@@ -56,7 +54,6 @@ export const updateComment = async (commentId: string, newText: string) => {
 };
 
 export const deleteComment = async (commentId: string) => {
-  const auth = getAuth();
   const user = auth.currentUser;
   if (!user) throw new Error('Kirjautuminen vaaditaan');
   const commentRef = doc(db, COMMENTS_COLLECTION, commentId);

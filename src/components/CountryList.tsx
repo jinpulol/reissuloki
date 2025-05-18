@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { Link } from 'react-router-dom'; // Olettaen, että käytät React Routeria navigointiin
+// import { Link } from 'react-router-dom'; // Olettaen, että käytät React Routeria navigointiin
 import { getAllCountriesSummary } from '../services/countryService';
 // import { getAllCountriesSummary, searchCountriesByName, getCountriesByRegion } from '../services/countryService';
 import type { Country } from '../services/countryService';
 import './CountryList.css'; // CSS-tyyleille
+import CountryCard from './CountryCard';
 
 type SummaryCountry = Pick<Country, 'name' | 'cca3' | 'flags' | 'population' | 'region' | 'capital'>;
 
@@ -119,15 +120,7 @@ const CountryList: React.FC = () => {
 
       <div className="country-grid" aria-live="polite">
         {filteredCountries.map((country) => (
-          <Link to={`/country/${country.cca3}`} key={country.cca3} className="country-card">
-            <img src={country.flags.svg} alt={`Lippu: ${country.name.common}`} loading="lazy" />
-            <div className="card-content">
-                <h2>{country.name.common}</h2>
-                <p>Pääkaupunki: {country.capital?.[0] || 'Ei tietoa'}</p>
-                <p>Väkiluku: {country.population.toLocaleString('fi-FI')}</p>
-                <p>Maanosa: {country.region}</p>
-            </div>
-          </Link>
+          <CountryCard key={country.cca3} country={country} />
         ))}
       </div>
     </div>

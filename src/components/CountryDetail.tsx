@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getCountryByCca3 } from '../services/countryService';
 import type { Country } from '../services/countryService';
-import { getAuth } from 'firebase/auth';
+import { auth } from '../firebaseConfig';
 import {
   addCountryToList,
   removeCountryFromList,
@@ -15,6 +15,8 @@ import {
   deleteComment,
   type CountryComment
 } from '../services/commentService';
+import CommentList from './CommentList';
+import CommentForm from './CommentForm';
 
 const CountryDetail: React.FC = () => {
   const { cca3 } = useParams<{ cca3: string }>();
@@ -26,7 +28,6 @@ const CountryDetail: React.FC = () => {
   const [commentText, setCommentText] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingText, setEditingText] = useState('');
-  const auth = getAuth();
   const user = auth.currentUser;
 
   useEffect(() => {
@@ -144,50 +145,23 @@ const CountryDetail: React.FC = () => {
         <div className="comment-section" style={{ marginTop: 40 }}>
           <h3>Kommentit</h3>
           {user && cca3 && (
-            <form onSubmit={handleAddComment} style={{ marginBottom: 16 }}>
-              <textarea
-                value={commentText}
-                onChange={e => setCommentText(e.target.value)}
-                rows={2}
-                style={{ width: '100%', maxWidth: 400 }}
-                placeholder="Jätä julkinen kommentti..."
-              />
-              <button type="submit" style={{ marginTop: 8 }}>Lähetä</button>
-            </form>
+            <CommentForm
+              value={commentText}
+              onChange={e => setCommentText(e.target.value)}
+              onSubmit={handleAddComment}
+            />
           )}
           {comments.length === 0 && <p>Ei kommentteja vielä.</p>}
-          <ul style={{ listStyle: 'none', padding: 0 }}>
-            {comments.map(comment => (
-              <li key={comment.id} style={{ marginBottom: 16, background: '#f3f7fa', borderRadius: 8, padding: 12 }}>
-                <div style={{ fontWeight: 500, color: '#185a9d', marginBottom: 4 }}>{comment.userEmail || 'Tuntematon käyttäjä'}</div>
-                {editingId === comment.id ? (
-                  <>
-                    <textarea
-                      value={editingText}
-                      onChange={e => setEditingText(e.target.value)}
-                      rows={2}
-                      style={{ width: '100%', maxWidth: 400 }}
-                    />
-                    <div style={{ marginTop: 4 }}>
-                      <button onClick={() => handleEditComment(comment.id!)} style={{ marginRight: 8 }}>Tallenna</button>
-                      <button onClick={() => { setEditingId(null); setEditingText(''); }}>Peruuta</button>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div style={{ marginBottom: 4 }}>{comment.text}</div>
-                    {user && user.uid === comment.userId && (
-                      <div>
-                        <button onClick={() => { setEditingId(comment.id!); setEditingText(comment.text); }} style={{ marginRight: 8, background: '#2980ef', color: 'white' }}>Muokkaa</button>
-                        <button onClick={() => handleDeleteComment(comment.id!)} style={{ background: '#e74c3c', color: 'white' }}>Poista</button>
-                      </div>
-                    )}
-                  </>
-                )}
-                <div style={{ fontSize: 12, color: '#888', marginTop: 4 }}>{comment.createdAt.toDate().toLocaleString('fi-FI')}</div>
-              </li>
-            ))}
-          </ul>
+          <CommentList
+            comments={comments}
+            userId={user?.uid}
+            editingId={editingId}
+            editingText={editingText}
+            setEditingId={setEditingId}
+            setEditingText={setEditingText}
+            onEdit={handleEditComment}
+            onDelete={handleDeleteComment}
+          />
         </div>
       </div>
     </div>
