@@ -4,7 +4,6 @@ import { auth } from './firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
 import type { User } from 'firebase/auth';
 import './Site.css';
-import Navbar from './components/Navbar';
 
 const CountryList = lazy(() => import('./components/CountryList'));
 const Register = lazy(() => import('./components/Register'));
@@ -33,7 +32,27 @@ function App() {
     <BrowserRouter>
       {user ? (
         <>
-          <Navbar onLogout={() => auth.signOut()} />
+          <nav style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            background: '#185a9d',
+            color: 'white',
+            zIndex: 1000,
+            padding: '1rem',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.07)',
+            display: 'flex',
+            gap: '1rem',
+            alignItems: 'center',
+            fontWeight: 500
+          }}>
+            <a href="/countries" style={{ color: 'white', textDecoration: 'none', fontSize: 18 }}>Maat</a>
+            <a href="/visited" style={{ color: 'white', textDecoration: 'none', fontSize: 18 }}>Käydyt maat</a>
+            <a href="/wishlist" style={{ color: 'white', textDecoration: 'none', fontSize: 18 }}>Toivelista</a>
+            <div className="nav-spacer" style={{ width: 32 }} />
+            <button onClick={() => auth.signOut()} style={{ background: '#e74c3c', color: 'white', marginRight: 20 }}>Kirjaudu ulos</button>
+          </nav>
           <div style={{ height: 68 }} />
           <Suspense fallback={<div style={{ minHeight: 350, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Ladataan...</div>}>
             <Routes>
@@ -48,7 +67,7 @@ function App() {
       ) : (
         <Suspense fallback={<div style={{ minHeight: 350, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Ladataan...</div>}>
           <Routes>
-            <Route path="/" element={<Login />} />
+            <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="*" element={<Login />} />
           </Routes>

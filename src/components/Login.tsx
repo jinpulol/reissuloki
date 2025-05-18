@@ -46,7 +46,7 @@ const Login: React.FC = () => {
         />
         <FormButton type="submit">Kirjaudu</FormButton>
       </form>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {error && <p style={{ color: 'red', marginTop: 12 }}>{error}</p>}
       <p>Ei tiliä? <Link to="/register">Rekisteröidy tästä</Link></p>
     </div>
   );
