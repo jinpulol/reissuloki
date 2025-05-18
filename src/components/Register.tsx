@@ -24,7 +24,6 @@ const Register: React.FC = () => {
 
   return (
     <div className="register-container">
-      <p style={{ color: 'blue' }}>Valmistellaan rekisteröitymistä!</p>
       <h2>Luo uusi käyttäjä</h2>
       <form onSubmit={handleSubmit}>
         <div>
@@ -48,7 +47,22 @@ const Register: React.FC = () => {
             minLength={6}
           />
         </div>
-        <button type="submit">Rekisteröidy</button>
+        <button type="submit" style={{ width: '100%', marginBottom: 10 }}>Rekisteröidy</button>
+        <a
+          href="/"
+          style={{
+            display: 'block',
+            color: '#e74c3c',
+            textAlign: 'center',
+            marginTop: 0,
+            fontSize: '0.98rem',
+            textDecoration: 'underline',
+            cursor: 'pointer',
+            fontWeight: 500
+          }}
+        >
+          Peruuta
+        </a>
       </form>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {success && <p style={{ color: 'green' }}>Rekisteröityminen onnistui!</p>}
