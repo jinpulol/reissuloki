@@ -5,7 +5,7 @@ Reissuloki on React + TypeScript + Firebase -sovellus, jossa voit tutkia maailma
 ## Ominaisuudet
 
 - **Kaikkien maiden selaus**: Listaa kaikki maailman maat kortteina (lippu, pääkaupunki, väkiluku, maanosat).
-- **Hakutoiminto**: Hae maita nimen, pääkaupungin tai kielen perusteella.
+- **Hakutoiminto**: Hae maita nimen tai pääkaupungin perusteella.
 - **Suodatus**: Suodata maita maanosan mukaan.
 - **Yksityiskohtainen maatietonäkymä**: Näe lippu, vaakuna, pääkaupunki, valuutat, kielet, väkiluku, pinta-ala, rajanaapurit ja karttalinkki.
 - **Käyttäjätunnistus**: Rekisteröidy ja kirjaudu Firebase Authilla.
