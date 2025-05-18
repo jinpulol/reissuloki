@@ -15,6 +15,7 @@ const WishlistCountries = lazy(() => import('./components/WishlistCountries'));
 function App() {
   const [user, setUser] = useState<User | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false); // hampurilaisvalikon tila
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -24,6 +25,11 @@ function App() {
     return () => unsubscribe();
   }, []);
 
+  // Sulje valikko reitityksen vaihtuessa
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [user]);
+
   if (!authChecked) {
     return <div style={{ minHeight: 350, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Ladataan...</div>;
   }
@@ -32,26 +38,31 @@ function App() {
     <BrowserRouter>
       {user ? (
         <>
-          <nav style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            background: '#185a9d',
-            color: 'white',
-            zIndex: 1000,
-            padding: '1rem',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.07)',
-            display: 'flex',
-            gap: '1rem',
-            alignItems: 'center',
-            fontWeight: 500
-          }}>
-            <a href="/countries" style={{ color: 'white', textDecoration: 'none', fontSize: 18 }}>Maat</a>
-            <a href="/visited" style={{ color: 'white', textDecoration: 'none', fontSize: 18 }}>Käydyt maat</a>
-            <a href="/wishlist" style={{ color: 'white', textDecoration: 'none', fontSize: 18 }}>Toivelista</a>
-            <div className="nav-spacer" style={{ width: 32 }} />
-            <button onClick={() => auth.signOut()} style={{ background: '#e74c3c', color: 'white', marginRight: 20 }}>Kirjaudu ulos</button>
+          <nav className="main-nav">
+            <button
+              className="hamburger"
+              aria-label={menuOpen ? 'Sulje valikko' : 'Avaa valikko'}
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen(o => !o)}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'white',
+                fontSize: 28,
+                cursor: 'pointer',
+                display: 'none',
+                marginRight: 12
+              }}
+            >
+              {menuOpen ? '✕' : '☰'}
+            </button>
+            <div className={menuOpen ? 'nav-links nav-links-open' : 'nav-links'}>
+              <a href="/countries" style={{ color: 'white', textDecoration: 'none', fontSize: 18 }}>Maat</a>
+              <a href="/visited" style={{ color: 'white', textDecoration: 'none', fontSize: 18 }}>Käydyt maat</a>
+              <a href="/wishlist" style={{ color: 'white', textDecoration: 'none', fontSize: 18 }}>Toivelista</a>
+              <div className="nav-spacer" style={{ width: 32 }} />
+              <button onClick={() => auth.signOut()} style={{ background: '#e74c3c', color: 'white', marginRight: 20 }}>Kirjaudu ulos</button>
+            </div>
           </nav>
           <div style={{ height: 68 }} />
           <Suspense fallback={<div style={{ minHeight: 350, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Ladataan...</div>}>
