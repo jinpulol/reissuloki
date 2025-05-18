@@ -2,7 +2,6 @@ import { Suspense, lazy, useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import type { User } from 'firebase/auth';
-import './App.css';
 import './Site.css';
 
 const CountryList = lazy(() => import('./components/CountryList'));
