@@ -1,15 +1,16 @@
-import { useEffect, useState } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import type { User } from 'firebase/auth';
 import './App.css';
 import './Site.css';
-import CountryList from './components/CountryList';
-import Register from './components/Register';
-import Login from './components/Login';
-import CountryDetail from './components/CountryDetail';
-import VisitedCountries from './components/VisitedCountries';
-import WishlistCountries from './components/WishlistCountries';
+
+const CountryList = lazy(() => import('./components/CountryList'));
+const Register = lazy(() => import('./components/Register'));
+const Login = lazy(() => import('./components/Login'));
+const CountryDetail = lazy(() => import('./components/CountryDetail'));
+const VisitedCountries = lazy(() => import('./components/VisitedCountries'));
+const WishlistCountries = lazy(() => import('./components/WishlistCountries'));
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
@@ -25,7 +26,7 @@ function App() {
   }, []);
 
   if (!authChecked) {
-    return <div>Ladataan...</div>;
+    return <div style={{ minHeight: 350, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Ladataan...</div>;
   }
 
   return (
@@ -54,20 +55,24 @@ function App() {
             <button onClick={() => getAuth().signOut()} style={{ background: '#e74c3c', color: 'white', marginRight: 20 }}>Kirjaudu ulos</button>
           </nav>
           <div style={{ height: 68 }} />
-          <Routes>
-            <Route path="/countries" element={<CountryList />} />
-            <Route path="/country/:cca3" element={<CountryDetail />} />
-            <Route path="/visited" element={<VisitedCountries />} />
-            <Route path="/wishlist" element={<WishlistCountries />} />
-            <Route path="*" element={<CountryList />} />
-          </Routes>
+          <Suspense fallback={<div style={{ minHeight: 350, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Ladataan...</div>}>
+            <Routes>
+              <Route path="/countries" element={<CountryList />} />
+              <Route path="/country/:cca3" element={<CountryDetail />} />
+              <Route path="/visited" element={<VisitedCountries />} />
+              <Route path="/wishlist" element={<WishlistCountries />} />
+              <Route path="*" element={<CountryList />} />
+            </Routes>
+          </Suspense>
         </>
       ) : (
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="*" element={<Login />} />
-        </Routes>
+        <Suspense fallback={<div style={{ minHeight: 350, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Ladataan...</div>}>
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="*" element={<Login />} />
+          </Routes>
+        </Suspense>
       )}
     </BrowserRouter>
   );

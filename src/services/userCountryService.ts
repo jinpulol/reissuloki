@@ -24,16 +24,3 @@ export const getUserCountryLists = async (user: User) => {
     wishlist: data.wishlist || []
   };
 };
-
-export const setCountryNote = async (user: User, cca3: string, note: string) => {
-  const userRef = getUserDocRef(user);
-  await setDoc(userRef, { notes: { [cca3]: note } }, { merge: true });
-};
-
-export const getCountryNote = async (user: User, cca3: string) => {
-  const userRef = getUserDocRef(user);
-  const snap = await getDoc(userRef);
-  if (!snap.exists()) return '';
-  const data = snap.data();
-  return data.notes?.[cca3] || '';
-};

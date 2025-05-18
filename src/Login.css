@@ -7,6 +7,7 @@
   padding: 2.5rem 2rem 2rem 2rem;
   font-family: 'Segoe UI', 'Arial', sans-serif;
   border: 1.5px solid #b3c6e0;
+  min-height: 350px;
 }
 .login-container h1 {
   text-align: center;
@@ -96,6 +97,7 @@
   padding: 2.5rem 2rem 2rem 2rem;
   font-family: 'Segoe UI', 'Arial', sans-serif;
   border: 1.5px solid #b3c6e0;
+  min-height: 350px;
 }
 .register-container h2 {
   text-align: center;
@@ -165,9 +167,39 @@
 @media (max-width: 500px) {
   .login-container {
     padding: 1.2rem 0.5rem;
+    min-height: 320px;
+    margin: 24px 4px;
+    border-radius: 10px;
   }
   .register-container {
     padding: 1.2rem 0.5rem;
+    min-height: 320px;
+    margin: 24px 4px;
+    border-radius: 10px;
+  }
+  .login-container form > div,
+  .register-container form > div {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.3rem;
+  }
+  .login-container label,
+  .register-container label {
+    text-align: left;
+    margin-bottom: 0.2rem;
+    min-width: 0;
+  }
+  .login-container input[type="email"],
+  .login-container input[type="password"],
+  .register-container input[type="email"],
+  .register-container input[type="password"] {
+    max-width: 100%;
+    font-size: 1rem;
+  }
+  .login-container button[type="submit"],
+  .register-container button[type="submit"] {
+    font-size: 1rem;
+    padding: 0.6rem 0;
   }
 }
 @media (min-width: 500px) {
